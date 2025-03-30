@@ -12,7 +12,6 @@ mkShell {
             pyqt5
             pyqt6
             matplotlib
-            adjusttext
             uncertainties
             venvShellHook
         ]))
