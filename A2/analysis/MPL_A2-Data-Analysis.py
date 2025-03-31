@@ -1,11 +1,4 @@
-# import copy
-# import pandas as pd
-# import csv
-# import uncertainties as uct
-# from uncertainties import unumpy as unp
-# import scipy
-# from scipy.optimize import curve_fit
-# from scipy.signal import savgol_filter, medfilt
+# Third party packages
 import math
 import matplotlib
 import matplotlib.lines as mlines
