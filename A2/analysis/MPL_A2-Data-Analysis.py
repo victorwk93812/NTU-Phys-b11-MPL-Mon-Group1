@@ -370,58 +370,98 @@ class Spectrum:
 spec1 = Spectrum("Exp4-1-7-8cells-50mm-iris-16mm.dat", tubelen = 50, unum = 8, ampthrs = 1)
 spec1.plot_spectrum("Exp4-1-7-8cells-50mm-iris-16mm-Spectrum", 
         "8x50mm Cells + 7x16mm Irises Spectrum", annotate = True, 
-        showfig = True)
+        showfig = False)
 spec1.plot_dispersion_relation(
         "Exp4-1-7-8cells-50mm-iris-16mm-Dispersion-Relation", 
         "8x50mm Cells + 7x16mm Irises Dispersion Relation Plot", 
-        ignore_freqs = [380.0], showfig = True)
+        ignore_freqs = [380.0], showfig = False)
 spec1.plot_DOS("Exp4-1-7-8cells-50mm-iris-16mm-DOS", 
         "8x50mm Cells + 7x16mm Irises Density of States Plot", 
-        ignore_freqs = [380.0], showfig = True, allowed_freqs = 20)
+        ignore_freqs = [380.0], showfig = False, allowed_freqs = 20)
 # spec1.debug()
 # print(spec1.peaks())
 
 spec2 = Spectrum("Exp4-1-7-8cells-75mm-iris-16mm.dat", tubelen = 75, unum = 8, ampthrs = 1)
 spec2.plot_spectrum( "Exp4-1-7-8cells-75mm-iris-16mm-Spectrum", 
         "8x75mm Cells + 7x16mm Irises Spectrum", annotate = True, 
-        showfig = True)
+        showfig = False)
 spec2.plot_dispersion_relation(
         "Exp4-1-7-8cells-75mm-iris-16mm-Dispersion-Relation", 
         "8x75mm Cells + 7x16mm Irises Dispersion Relation Plot", 
-        showfig = True)
+        showfig = False)
 
 spec3 = Spectrum("Exp4-1-8-10cells-50mm-iris-16mm.dat", tubelen = 50, unum = 10, ampthrs = 1)
 spec3.plot_spectrum( "Exp4-1-8-10cells-50mm-iris-16mm-Spectrum", 
         "10x50mm Cells + 9x16mm Irises Spectrum", annotate = True, 
-        showfig = True)
+        showfig = False)
 spec3.plot_dispersion_relation(
         "Exp4-1-8-10cells-50mm-iris-16mm-Dispersion-Relation", 
         "10x50mm Cells + 9x16mm Irises Dispersion Relation Plot", 
-        showfig = True, allowed_freqs = 25, add_freqs = [5190.0])
+        showfig = False, allowed_freqs = 25, add_freqs = [5190.0])
 
 spec4 = Spectrum("Exp4-1-8-12cells-50mm-iris-16mm.dat", tubelen = 50, unum = 12, ampthrs = 1)
 spec4.plot_spectrum( "Exp4-1-8-12cells-50mm-iris-16mm-Spectrum", 
         "12x50mm Cells + 11x16mm Irises Spectrum", annotate = True, 
-        showfig = True)
+        showfig = False)
 spec4.plot_dispersion_relation(
         "Exp4-1-8-12cells-50mm-iris-16mm-Dispersion-Relation", 
         "12x50mm Cells + 11x16mm Irises Dispersion Relation Plot", 
-        ignore_freqs = [130.0], showfig = True, allowed_freqs = 30, add_freqs = [5200.0])
+        ignore_freqs = [130.0], showfig = False, allowed_freqs = 30, add_freqs = [5200.0])
 
 spec5 = Spectrum("Exp4-1-9-8cells-50mm-iris-10mm.dat", tubelen = 50, unum = 8, ampthrs = 1)
 spec5.plot_spectrum( "Exp4-1-9-8cells-50mm-iris-10mm-Spectrum", 
         "8x50mm Cells + 7x10mm Irises Spectrum", annotate = True, 
-        showfig = True)
+        showfig = False)
 spec5.plot_dispersion_relation(
         "Exp4-1-9-8cells-50mm-iris-10mm-Dispersion-Relation", 
         "8x50mm Cells + 7x10mm Irises Dispersion Relation Plot", 
-        ignore_freqs = [210.0], showfig = True, allowed_freqs = 20, add_freqs = [4300.0])
+        ignore_freqs = [210.0], showfig = False, allowed_freqs = 20, add_freqs = [4300.0])
 
 spec6 = Spectrum("Exp4-1-9-8cells-50mm-iris-13mm.dat", tubelen = 50, unum = 8, ampthrs = 1)
 spec6.plot_spectrum( "Exp4-1-9-8cells-50mm-iris-13mm-Spectrum", 
         "8x50mm Cells + 7x13mm Irises Spectrum", annotate = True, 
-        showfig = True)
+        showfig = False)
 spec6.plot_dispersion_relation(
         "Exp4-1-9-8cells-50mm-iris-13mm-Dispersion-Relation", 
         "8x50mm Cells + 7x13mm Irises Dispersion Relation Plot", 
-        ignore_freqs = [350.0], showfig = True, allowed_freqs = 20)
+        ignore_freqs = [350.0], showfig = False, allowed_freqs = 20)
+
+def plot_analog_dispersion_relation(figname: str, tname: str, wavenumrange: float = 100, 
+                                    halfzonewidth: float = 20, 
+                                    a: float = 1, b: float = 0.01, 
+                                    showfig: bool = True):
+    # wave number array
+    wavenum = np.linspace(- wavenumrange, wavenumrange, 1000)
+    # reduced zone wave number array
+    redwavenum = ((wavenum + halfzonewidth) % (2 * halfzonewidth) - halfzonewidth)
+    # Sound wave frequency (dispersion relation), a = c/2L
+    sfreq = a * wavenum
+    # Electron energy (dispersion relation), b = \hbar^2/2m
+    energy = b * wavenum**2
+    # Create the plot
+    fig, axs = plt.subplots(figsize=(10, 5))  # Set figure size
+    axs.scatter(wavenum, sfreq, s = 10, label="Sound Wave Dispersion Relation") 
+    axs.scatter(redwavenum, sfreq, s = 10, label="Sound Wave Dispersion Relation (Reduced Zone)") 
+    axs.scatter(wavenum, energy, s = 10, label="Electron Dispersion Relation") 
+    axs.scatter(redwavenum, energy, s = 10, label="Electron Dispersion Relation (Reduced Zone)") 
+
+    zonenum = int(wavenumrange // halfzonewidth)
+    for n in [i for i in range(-zonenum, zonenum + 1) if i % 2 == 1]:
+        if n == 1:
+            axs.axvline(x = n * halfzonewidth, color='orange', linestyle='--',
+                        label = "Brillouin Zone Boundary")
+        else:
+            axs.axvline(x = n * halfzonewidth, color='orange', linestyle='--')
+
+    axs.set_xlabel("Wave Number")  # X-axis label
+    axs.set_ylabel("Frequency (Sound), Energy (Electron)")  # Y-axis label
+    axs.set_title(tname)  # Title
+    axs.legend()  # Show legend
+    axs.grid(True)  # Add grid for better readability
+    # Save the figure
+    fig.savefig(Spectrum.picsdir + f"{figname}.png", dpi=300)  # Save as PNG with high resolution
+    if showfig:
+        plt.show()  # Show the plot
+    plt.close(fig) # Close so that the plot is not displayed further
+
+plot_analog_dispersion_relation("Exp4-1-Dispersion-Relation-Analog", "Dispersion Relation Analog between Sound and Electron")
