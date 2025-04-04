@@ -25,6 +25,7 @@ class Spectrum:
     Args:
         fname (str): Target data file name relative to the data directory "../data/". 
         tubelen (float): Tube length (mm). 
+        unum (int): Number of unit cells, e.g., number of 5/7.5 mm cells. 
         wsize (int, optional): Peak windowing size. Defaults to 5. 
         ampthrs: (int, optional): Frequency peak threshold amplitude. Defaults 
             to None. 
@@ -33,6 +34,8 @@ class Spectrum:
     fname: str
     # tube length (mm)
     tubelen: float
+    # number of unit cells, e.g. number of 5/7.5 mm tubes
+    unum: int
     # peak windowing size
     wsize: int = 5
     # peak threshold amplitude
@@ -197,8 +200,8 @@ class Spectrum:
         plt.close(self.specplot) # Close so that the plot is not displayed further
 
     @staticmethod
-    def remove_ignore_freqs( removed_freqs: list[float], all_freqs: list[float],
-            ignore_freqs: list[float], allowed_freqs: int):
+    def adjust_freqs(removed_freqs: list[float], all_freqs: list[float],
+                     ignore_freqs: list[float], add_freqs: list[float], allowed_freqs: int):
         """Remove ignored frequencies from auto-detected peak frequencies.
 
         Args: 
@@ -208,6 +211,10 @@ class Spectrum:
             ignore_freqs (list[float]): Frequencies to ignore.
             allowed_freqs (int): Maximum number of resonance frequencies to plot.
         """
+
+        # Manually add frequencies into all_freqs array
+        all_freqs += add_freqs 
+        all_freqs.sort()
 
         i, j = 0, 0
         while i < len(all_freqs) and j < len(ignore_freqs) and len(removed_freqs) < allowed_freqs:
@@ -225,8 +232,9 @@ class Spectrum:
             i += 1
 
     def plot_dispersion_relation(self, figname: str, tname: str, 
-            showfig: bool = True, allowed_freqs: int = 20, 
-            ignore_freqs: list[float] | None = None):
+             showfig: bool = True, allowed_freqs: int = 20, 
+             ignore_freqs: list[float] | None = None,
+             add_freqs: list[float] | None = None):
         """Plot resonance frequencies f to wave numbers k_n.
 
         Note that the 0-th order resonance appear at k = 0 which is not observable. 
@@ -242,19 +250,31 @@ class Spectrum:
             ignore_freqs (list[float], optional): List of frequencies to ignore. 
                 Defaults to None. 
         """
-        # Initialize ignored frequencies
+        # Initialize ignored and added frequencies
         if ignore_freqs is None:
             ignore_freqs = []
+        if add_freqs is None:
+            add_freqs = []
 
         # Resonance frequency array and wave number array used in plot
-        rwavenum = [n * self.basewavenum for n in range(1, allowed_freqs + 1)]
+        # Additionally added n = 0 resonance (freq, wavenum) = (0, 0)
+        # ((n + self.unum) % (2 * self.unum) - self.unum): keeps wavenum in 
+        # first Brillouin zone 
+        rwavenum = [((n + self.unum) % (2 * self.unum) - self.unum) 
+                    * self.basewavenum for n in range(0, allowed_freqs + 1)]
         rfreq = []
-        Spectrum.remove_ignore_freqs(rfreq, [x[0] for x in self.pklist], 
-                ignore_freqs, allowed_freqs)
+        Spectrum.adjust_freqs(rfreq, [x[0] for x in self.pklist], 
+                ignore_freqs, add_freqs, allowed_freqs)
+        rfreq = [0.0] + rfreq
 
         # Free space dispersion line
-        fwavenum = np.linspace(0, (allowed_freqs + 1) * self.basewavenum, 300)
-        ffreq = np.linspace(0, (allowed_freqs + 1) * self.basefreq, 300)
+        ffreq = np.linspace(0, (allowed_freqs + 1) * self.basefreq, 500)
+        # No irises resonance frequencies
+        fresfreq = [n * self.basefreq for n in range(0, allowed_freqs + 1)]
+        fwavenum = np.linspace(0, (allowed_freqs + 1) * self.basewavenum, 500)
+        # Again keep wavenum in first Brillouim zone
+        halfbzlen = self.unum * self.basewavenum
+        fwavenum = (fwavenum + halfbzlen) % (2 * halfbzlen) - halfbzlen
 
         # Construct figure
         self.dispplot, self.dispax = plt.subplots(figsize=(10, 5))  
@@ -262,7 +282,29 @@ class Spectrum:
         # Plot data
         self.dispax.scatter(rwavenum, rfreq, label="Resonance Frequencies", 
                 c = "orange")
-        self.dispax.plot(fwavenum, ffreq, label="Free Space Dispersion Relation") 
+        self.dispax.scatter(fwavenum, ffreq, s = 10, 
+                            label="Free Space Dispersion Relation") 
+        self.dispax.scatter(rwavenum, fresfreq, s = 30, 
+                            label="Resonance Frequencies (No Irises)", c = "red") 
+
+        # Draw freuquency (energy) bands
+        l = 0
+        while l < len(rfreq):
+            r = min(l + self.unum - 1, len(rfreq) - 1)
+            if l == 0:
+                self.dispax.axhspan(rfreq[l], rfreq[r], color="orange",
+                                    alpha=0.3, hatch="/", label = "Frequency bands")
+            else:
+                self.dispax.axhspan(rfreq[l], rfreq[r], color="orange",
+                                    alpha=0.3, hatch="/")
+            l += self.unum
+
+        # Draw first Brillouin zone
+        # self.dispax.axvspan(-halfbzlen, halfbzlen, color="green",
+        #                     alpha=0.3, hatch="\\", label="First Brillouin Zone")
+        self.dispax.axvline(x = halfbzlen, color='green', linestyle='--', 
+                            alpha=0.7, label = "First Brillouin Zone Boundary")
+        self.dispax.axvline(x = -halfbzlen, color='green', linestyle='--', alpha=0.7)
 
         # Plot information
         self.dispax.set_xlabel("Wave Number (1/mm)")  # X-axis label
@@ -278,7 +320,8 @@ class Spectrum:
         plt.close(self.dispplot) # Close so that the plot is not displayed further
 
     def plot_DOS(self, figname: str, tname: str, showfig: bool = True, 
-            allowed_freqs: int = 20, ignore_freqs: list[float] | None = None):
+            allowed_freqs: int = 20, ignore_freqs: list[float] | None = None, 
+            add_freqs: list[float] | None = None):
         """Plot the DOS D(f_i) w.r.t the resonance frequencies f_i. 
 
         DOS formula: 
@@ -294,14 +337,16 @@ class Spectrum:
             ignore_freqs (list[float], optional): List of frequencies to ignore. 
                 Defaults to None. 
         """
-        # Initialize ignored frequencies
+        # Initialize ignored and added frequencies
         if ignore_freqs is None:
             ignore_freqs = []
+        if add_freqs is None:
+            add_freqs = []
 
         # Resonance frequency array and wave number array used in plot
         rfreq = []
-        Spectrum.remove_ignore_freqs(rfreq, [x[0] for x in self.pklist], 
-                ignore_freqs, allowed_freqs)
+        Spectrum.adjust_freqs(rfreq, [x[0] for x in self.pklist], 
+                ignore_freqs, add_freqs, allowed_freqs)
 
         # DOS calculation
         DOS = [1 / (rfreq[i + 1] - rfreq[i]) for i in range(0, len(rfreq) - 1)]
@@ -322,61 +367,61 @@ class Spectrum:
         plt.close(self.DOSplot) # Close so that the plot is not displayed further
 
 
-spec1 = Spectrum("Exp4-1-7-8cells-50mm-iris-16mm.dat", 50, ampthrs = 1)
+spec1 = Spectrum("Exp4-1-7-8cells-50mm-iris-16mm.dat", tubelen = 50, unum = 8, ampthrs = 1)
 spec1.plot_spectrum("Exp4-1-7-8cells-50mm-iris-16mm-Spectrum", 
         "8x50mm Cells + 7x16mm Irises Spectrum", annotate = True, 
-        showfig = False)
+        showfig = True)
 spec1.plot_dispersion_relation(
         "Exp4-1-7-8cells-50mm-iris-16mm-Dispersion-Relation", 
         "8x50mm Cells + 7x16mm Irises Dispersion Relation Plot", 
-        ignore_freqs = [380.0], showfig = False)
+        ignore_freqs = [380.0], showfig = True)
 spec1.plot_DOS("Exp4-1-7-8cells-50mm-iris-16mm-DOS", 
         "8x50mm Cells + 7x16mm Irises Density of States Plot", 
-        ignore_freqs = [380.0], allowed_freqs = 30, showfig = False)
+        ignore_freqs = [380.0], showfig = True, allowed_freqs = 20)
 # spec1.debug()
 # print(spec1.peaks())
 
-spec2 = Spectrum("Exp4-1-7-8cells-75mm-iris-16mm.dat", 75, ampthrs = 1)
+spec2 = Spectrum("Exp4-1-7-8cells-75mm-iris-16mm.dat", tubelen = 75, unum = 8, ampthrs = 1)
 spec2.plot_spectrum( "Exp4-1-7-8cells-75mm-iris-16mm-Spectrum", 
         "8x75mm Cells + 7x16mm Irises Spectrum", annotate = True, 
-        showfig = False)
+        showfig = True)
 spec2.plot_dispersion_relation(
         "Exp4-1-7-8cells-75mm-iris-16mm-Dispersion-Relation", 
         "8x75mm Cells + 7x16mm Irises Dispersion Relation Plot", 
-        showfig = False)
+        showfig = True)
 
-spec3 = Spectrum("Exp4-1-8-10cells-50mm-iris-16mm.dat", 50, ampthrs = 1)
+spec3 = Spectrum("Exp4-1-8-10cells-50mm-iris-16mm.dat", tubelen = 50, unum = 10, ampthrs = 1)
 spec3.plot_spectrum( "Exp4-1-8-10cells-50mm-iris-16mm-Spectrum", 
         "10x50mm Cells + 9x16mm Irises Spectrum", annotate = True, 
-        showfig = False)
+        showfig = True)
 spec3.plot_dispersion_relation(
         "Exp4-1-8-10cells-50mm-iris-16mm-Dispersion-Relation", 
         "10x50mm Cells + 9x16mm Irises Dispersion Relation Plot", 
-        showfig = False)
+        showfig = True, allowed_freqs = 25, add_freqs = [5190.0])
 
-spec4 = Spectrum("Exp4-1-8-12cells-50mm-iris-16mm.dat", 50, ampthrs = 1)
+spec4 = Spectrum("Exp4-1-8-12cells-50mm-iris-16mm.dat", tubelen = 50, unum = 12, ampthrs = 1)
 spec4.plot_spectrum( "Exp4-1-8-12cells-50mm-iris-16mm-Spectrum", 
         "12x50mm Cells + 11x16mm Irises Spectrum", annotate = True, 
-        showfig = False)
+        showfig = True)
 spec4.plot_dispersion_relation(
         "Exp4-1-8-12cells-50mm-iris-16mm-Dispersion-Relation", 
         "12x50mm Cells + 11x16mm Irises Dispersion Relation Plot", 
-        ignore_freqs = [130.0], showfig = False)
+        ignore_freqs = [130.0], showfig = True, allowed_freqs = 30, add_freqs = [5200.0])
 
-spec5 = Spectrum("Exp4-1-9-8cells-50mm-iris-10mm.dat", 50, ampthrs = 1)
+spec5 = Spectrum("Exp4-1-9-8cells-50mm-iris-10mm.dat", tubelen = 50, unum = 8, ampthrs = 1)
 spec5.plot_spectrum( "Exp4-1-9-8cells-50mm-iris-10mm-Spectrum", 
         "8x50mm Cells + 7x10mm Irises Spectrum", annotate = True, 
-        showfig = False)
+        showfig = True)
 spec5.plot_dispersion_relation(
         "Exp4-1-9-8cells-50mm-iris-10mm-Dispersion-Relation", 
         "8x50mm Cells + 7x10mm Irises Dispersion Relation Plot", 
-        ignore_freqs = [210.0], showfig = False)
+        ignore_freqs = [210.0], showfig = True, allowed_freqs = 20, add_freqs = [4300.0])
 
-spec6 = Spectrum("Exp4-1-9-8cells-50mm-iris-13mm.dat", 50, ampthrs = 1)
+spec6 = Spectrum("Exp4-1-9-8cells-50mm-iris-13mm.dat", tubelen = 50, unum = 8, ampthrs = 1)
 spec6.plot_spectrum( "Exp4-1-9-8cells-50mm-iris-13mm-Spectrum", 
         "8x50mm Cells + 7x13mm Irises Spectrum", annotate = True, 
-        showfig = False)
+        showfig = True)
 spec6.plot_dispersion_relation(
         "Exp4-1-9-8cells-50mm-iris-13mm-Dispersion-Relation", 
         "8x50mm Cells + 7x13mm Irises Dispersion Relation Plot", 
-        ignore_freqs = [350.0], showfig = False)
+        ignore_freqs = [350.0], showfig = True, allowed_freqs = 20)
