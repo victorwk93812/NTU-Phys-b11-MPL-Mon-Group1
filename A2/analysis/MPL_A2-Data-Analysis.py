@@ -129,7 +129,7 @@ class Spectrum:
         return self.pklist
 
     def plot_spectrum(self, figname: str, tname: str, annotate: bool = False, 
-            showfig: bool = True):
+                      mark: bool = True, showfig: bool = True):
         """Plot the amplitude vs frequency spectrum.
 
         Args: 
@@ -164,33 +164,38 @@ class Spectrum:
         # Mark peaks with vertical lines
         modenum = 1
         resfreq = self.basefreq
-        while(modenum * self.basefreq <= self.freq[-1]):
-            self.specax.axvline(x = resfreq, color='orange', linestyle='--', 
-                                alpha=0.7)
-            # Define a proxy line (doesn't appear in plot, only legend)
-            peak_proxy = mlines.Line2D(
-                    [], [], 
-                    color='orange', 
-                    linestyle='--', 
-                    label="Original Resonance Frequencies"
-                    )
-            # Label the vertical line
-            self.specax.text(
-                    resfreq + 0.4 * self.basefreq, 
-                    y_top * 0.02 , 
-                    f"{modenum}", 
-                    rotation=0, 
-                    fontsize=7, 
-                    color='red', 
-                    ha='center'
-                    )
-            modenum = modenum + 1
-            resfreq = resfreq + self.basefreq
+
+        # Mark original resonance frequencies
+        if mark:
+            while(modenum * self.basefreq <= self.freq[-1]):
+                self.specax.axvline(x = resfreq, color='orange', linestyle='--', 
+                                    alpha=0.7)
+                # Define a proxy line (doesn't appear in plot, only legend)
+                peak_proxy = mlines.Line2D(
+                        [], [], 
+                        color='orange', 
+                        linestyle='--', 
+                        label="Original Resonance Frequencies"
+                        )
+                # Label the vertical line
+                self.specax.text(
+                        resfreq + 0.4 * self.basefreq, 
+                        y_top * 0.02 , 
+                        f"{modenum}", 
+                        rotation=0, 
+                        fontsize=7, 
+                        color='red', 
+                        ha='center'
+                        )
+                modenum = modenum + 1
+                resfreq = resfreq + self.basefreq
+            self.specax.legend(handles = [peak_proxy])  # Show legend
+        else:
+            self.specax.legend()  # Show legend
 
         self.specax.set_xlabel("Frequency (Hz)")  # X-axis label
         self.specax.set_ylabel("Amplitude")  # Y-axis label
         self.specax.set_title(tname)  # Title
-        self.specax.legend(handles = [peak_proxy])  # Show legend
         self.specax.grid(True)  # Add grid for better readability
 
         # Save the figure
@@ -426,6 +431,56 @@ spec6.plot_dispersion_relation(
         "8x50mm Cells + 7x13mm Irises Dispersion Relation Plot", 
         ignore_freqs = [350.0], showfig = False, allowed_freqs = 20)
 
+spec7 = Spectrum("Exp4-3-1-all-13mm.dat", tubelen = 50, unum = 12, ampthrs = 1)
+spec7.plot_spectrum( "Exp4-3-1-all-13mm-Spectrum", 
+        "12x50mm Cells + 11x13mm Irises Spectrum", annotate = True, 
+        showfig = False)
+spec7.plot_dispersion_relation(
+        "Exp4-3-1-all-13mm-Dispersion-Relation", 
+        "12x50mm Cells + 11x13mm Irises Dispersion Relation Plot", 
+        ignore_freqs = [780.0, 1010.0], add_freqs = [3380.0, 4760.0], 
+        showfig = False, allowed_freqs = 28)
+
+spec8 = Spectrum("Exp4-3-1-16mm-13mm.dat", tubelen = 50, unum = 12, ampthrs = 1)
+spec8.plot_spectrum( "Exp4-3-1-16mm-13mm-Spectrum", 
+        "12x50mm Cells + 6x13, 5x16mm Irises Spectrum", annotate = True, 
+        showfig = False)
+spec8.plot_dispersion_relation(
+        "Exp4-3-1-16mm-13mm-Dispersion-Relation", 
+        "12x50mm Cells + 6x13, 5x16mm Irises Dispersion Relation Plot", 
+        ignore_freqs = [830.0], add_freqs = [4990.0], 
+        showfig = False, allowed_freqs = 28)
+
+spec9 = Spectrum("Exp4-3-2-spectrum.dat", tubelen = 125, unum = 5, ampthrs = 1)
+spec9.plot_spectrum( "Exp4-3-2-spectrum-Spectrum", 
+        "5x(50mm Cell + 16mm Iris + 75mm Cell) Spectrum", annotate = True, 
+        mark = False, showfig = False)
+spec9.plot_dispersion_relation(
+        "Exp4-3-2-spectrum-Dispersion-Relation", 
+        "5x(50mm Cell + 16mm Iris + 75mm Cell) Dispersion Relation Plot", 
+        ignore_freqs = [], add_freqs = [], 
+        showfig = False, allowed_freqs = 30)
+
+spec10 = Spectrum("Exp4-4-1-nodefect.dat", tubelen = 50, unum = 12, ampthrs = 1)
+spec10.plot_spectrum( "Exp4-4-1-nodefect-Spectrum", 
+        "12x50mm Cell + 11x16mm Iris Spectrum", annotate = True, 
+        mark = False, showfig = False)
+spec10.plot_dispersion_relation(
+        "Exp4-4-1-nodefect-Dispersion-Relation", 
+        "12x50mm Cell + 11x16mm Iris Dispersion Relation Plot", 
+        ignore_freqs = [], add_freqs = [5210.0], 
+        showfig = False, allowed_freqs = 30)
+
+spec11 = Spectrum("Exp4-4-1-defect-head.dat", tubelen = 50, unum = 12, ampthrs = 1)
+spec11.plot_spectrum( "Exp4-4-1-defect-head-Spectrum", 
+        "11x50mm Cell + 11x16mm Iris + 1x75mm defect in front Spectrum", annotate = True, 
+        mark = False, showfig = False)
+spec11.plot_dispersion_relation(
+        "Exp4-4-1-defect-head-Dispersion-Relation", 
+        "11x50mm Cell + 11x16mm Iris + 1x75mm defect in front Spectrum", 
+        ignore_freqs = [], add_freqs = [], 
+        showfig = False, allowed_freqs = 30)
+
 def plot_analog_dispersion_relation(figname: str, tname: str, wavenumrange: float = 100, 
                                     halfzonewidth: float = 20, 
                                     a: float = 1, b: float = 0.01, 
@@ -464,4 +519,6 @@ def plot_analog_dispersion_relation(figname: str, tname: str, wavenumrange: floa
         plt.show()  # Show the plot
     plt.close(fig) # Close so that the plot is not displayed further
 
-plot_analog_dispersion_relation("Exp4-1-Dispersion-Relation-Analog", "Dispersion Relation Analog between Sound and Electron")
+plot_analog_dispersion_relation("Exp4-1-Dispersion-Relation-Analog", 
+                                "Dispersion Relation Analog between Sound and Electron", 
+                                showfig = False)
