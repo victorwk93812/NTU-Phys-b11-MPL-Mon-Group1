@@ -1,0 +1,14 @@
+
+--- Fit with Slit Width ---
+Fitted I0 (6cm): 52.540 ± 12.365
+Fitted I0 (9cm): 1.575 ± 0.182
+Fitted d (6cm): 8.235 cm ± 0.643 cm
+Fitted d (9cm): 10.713 cm ± 0.426 cm
+Fitted b (6cm): 2.624 cm ± 0.680 cm
+Fitted b (9cm): 3.323 cm ± 0.462 cm
+
+--- Fit without Slit Width ---
+Fitted I0 (6cm): 26.113 ± 8.327
+Fitted I0 (9cm): 0.631 ± 0.179
+Fitted d (6cm): 7.866 cm ± 0.339 cm
+Fitted d (9cm): 10.582 cm ± 0.329 cm
