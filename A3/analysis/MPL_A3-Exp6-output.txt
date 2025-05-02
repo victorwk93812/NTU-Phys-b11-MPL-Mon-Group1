@@ -12,3 +12,13 @@ Fitted I0 (6cm): 26.113 ± 8.327
 Fitted I0 (9cm): 0.631 ± 0.179
 Fitted d (6cm): 7.866 cm ± 0.339 cm
 Fitted d (9cm): 10.582 cm ± 0.329 cm
+
+--- Amplitude min/max angles ---
+6cm exp. consider width amp. max angles: ['19.54', '41.48', '72.95']
+6cm exp. consider width amp. min angles: ['9.93', '31.31', '59.90']
+6cm exp. omit width amp. max angles: ['21.22', '46.45']
+6cm exp. omit width amp. min angles: ['10.41', '32.91', '64.94']
+9cm exp. consider width amp. max angles: ['14.89', '30.67', '47.81', '63.42']
+9cm exp. consider width amp. min angles: ['7.61', '23.54', '41.72', '59.02', '68.63']
+9cm exp. omit width amp. max angles: ['15.62', '32.59', '53.89']
+9cm exp. omit width amp. min angles: ['7.77', '23.86', '42.36', '70.47']

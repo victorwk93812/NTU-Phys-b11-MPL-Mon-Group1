@@ -176,3 +176,41 @@ fig.tight_layout()
 plt.show()
 
 fig.savefig("../pics/Exp6-Fit.png", dpi=300)
+
+max_amp_ang_w_6cm = []
+max_amp_ang_w_9cm = []
+max_amp_ang_wo_w_6cm = []
+max_amp_ang_wo_w_9cm = []
+min_amp_ang_w_6cm = []
+min_amp_ang_w_9cm = []
+min_amp_ang_wo_w_6cm = []
+min_amp_ang_wo_w_9cm = []
+
+for i in range(2, len(theta_true_data_deg) - 2):
+    if amp_fit_w_curve_6cm[i] == np.min(amp_fit_w_curve_6cm[i - 2:i + 2]):
+        min_amp_ang_w_6cm.append(theta_true_data_deg[i])
+    if amp_fit_w_curve_9cm[i] == np.min(amp_fit_w_curve_9cm[i - 2:i + 2]):
+        min_amp_ang_w_9cm.append(theta_true_data_deg[i])
+    if amp_fit_wo_w_curve_6cm[i] == np.min(amp_fit_wo_w_curve_6cm[i - 2:i + 2]):
+        min_amp_ang_wo_w_6cm.append(theta_true_data_deg[i])
+    if amp_fit_wo_w_curve_9cm[i] == np.min(amp_fit_wo_w_curve_9cm[i - 2:i + 2]):
+        min_amp_ang_wo_w_9cm.append(theta_true_data_deg[i])
+    if amp_fit_w_curve_6cm[i] == np.max(amp_fit_w_curve_6cm[i - 2:i + 2]):
+        max_amp_ang_w_6cm.append(theta_true_data_deg[i])
+    if amp_fit_w_curve_9cm[i] == np.max(amp_fit_w_curve_9cm[i - 2:i + 2]):
+        max_amp_ang_w_9cm.append(theta_true_data_deg[i])
+    if amp_fit_wo_w_curve_6cm[i] == np.max(amp_fit_wo_w_curve_6cm[i - 2:i + 2]):
+        max_amp_ang_wo_w_6cm.append(theta_true_data_deg[i])
+    if amp_fit_wo_w_curve_9cm[i] == np.max(amp_fit_wo_w_curve_9cm[i - 2:i + 2]):
+        max_amp_ang_wo_w_9cm.append(theta_true_data_deg[i])
+
+print("\n--- Amplitude min/max angles ---")
+print("6cm exp. consider width amp. max angles:", [f"{num:.2f}" for num in max_amp_ang_w_6cm])
+print("6cm exp. consider width amp. min angles:", [f"{num:.2f}" for num in min_amp_ang_w_6cm])
+print("6cm exp. omit width amp. max angles:", [f"{num:.2f}" for num in max_amp_ang_wo_w_6cm])
+print("6cm exp. omit width amp. min angles:", [f"{num:.2f}" for num in min_amp_ang_wo_w_6cm])
+print("9cm exp. consider width amp. max angles:", [f"{num:.2f}" for num in max_amp_ang_w_9cm])
+print("9cm exp. consider width amp. min angles:", [f"{num:.2f}" for num in min_amp_ang_w_9cm])
+print("9cm exp. omit width amp. max angles:", [f"{num:.2f}" for num in max_amp_ang_wo_w_9cm])
+print("9cm exp. omit width amp. min angles:", [f"{num:.2f}" for num in min_amp_ang_wo_w_9cm])
+
