@@ -47,18 +47,31 @@ figSE, axsSE = plt.subplots(3, figsize = (10, 5))
 T2fit_time = []
 T2fit_amp = []
 for i, axs in enumerate(axsSE):
-    axs.plot(NMR_time_sliced[i], NMR_amp_smth[i])
-    axs.scatter(NMR_time_sliced[i][NMR_sig_peaks[i]], NMR_amp_smth[i][NMR_sig_peaks[i]], color = "orange")
+    axs.plot(NMR_time_sliced[i], NMR_amp_smth[i], label = "Smoothed spin-echo NMR amplitude signal")
+    axs.scatter(NMR_time_sliced[i][NMR_sig_peaks[i][1]], NMR_amp_smth[i][NMR_sig_peaks[i][1]], color = "orange", label = "Spin-echo peak")
     axs.annotate(f"{NMR_time_sliced[i][NMR_sig_peaks[i][1]]:.2f}", (NMR_time_sliced[i][NMR_sig_peaks[i][1]], NMR_amp_smth[i][NMR_sig_peaks[i][1]]), textcoords="offset points", xytext=(0,-10), ha='center', fontsize=8)
+    axs.legend()
+    axs.grid()
     T2fit_time.append(NMR_time_sliced[i][NMR_sig_peaks[i][1]])
     T2fit_amp.append(NMR_amp_smth[i][NMR_sig_peaks[i][1]])
+figSE.suptitle("Spin-Echo Peaks in Smoothed NMR Amplitude Signal")
 plt.show()
 
 def magmom_T2_eq(time, Mz, T2):
     return Mz * np.exp(-time/T2)
 
 T2popt, T2pcov = curve_fit(magmom_T2_eq, T2fit_time, T2fit_amp)
-print(T2popt)
+T2perr = np.sqrt(np.diag(T2pcov))
+print(f"Fit T2: {T2popt[1]:.3f} ± {T2perr[1]:.3f} s")
+T2_fit_curve = magmom_T2_eq(NMR_time_sliced[0], T2popt[0], T2popt[1])
+
+figSEfit, axsSEfit = plt.subplots(1, figsize = (10, 5))
+axsSEfit.plot(NMR_time_sliced[0], T2_fit_curve, label = "T2 decay fit curve")
+axsSEfit.scatter(T2fit_time, T2fit_amp, color = "orange", label = "Spin-echo data")
+axsSEfit.set_title("Spin-Echo T2 Fit Graph")
+axsSEfit.grid()
+axsSEfit.legend()
+plt.show()
 
 
 

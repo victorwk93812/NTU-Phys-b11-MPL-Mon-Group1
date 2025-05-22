@@ -1,0 +1,17 @@
+---Curie M0, T2* Fit---
+Curie pol. current 1 A fit M0: 0.941 ± 0.001 s
+Curie pol. current 1 A fit T2*: 1.146 ± 0.003 s
+Curie pol. current 1.3 A fit M0: 1.202 ± 0.001 s
+Curie pol. current 1.3 A fit T2*: 0.743 ± 0.001 s
+Curie pol. current 1.5 A fit M0: 1.408 ± 0.001 s
+Curie pol. current 1.5 A fit T2*: 0.708 ± 0.001 s
+Curie pol. current 1.8 A fit M0: 1.660 ± 0.001 s
+Curie pol. current 1.8 A fit T2*: 0.578 ± 0.001 s
+Curie pol. current 2 A fit M0: 1.896 ± 0.001 s
+Curie pol. current 2 A fit T2*: 0.550 ± 0.001 s
+Curie pol. current 2.3 A fit M0: 2.256 ± 0.001 s
+Curie pol. current 2.3 A fit T2*: 0.519 ± 0.000 s
+Curie pol. current 2.5 A fit M0: 2.260 ± 0.001 s
+Curie pol. current 2.5 A fit T2*: 0.522 ± 0.001 s
+Curie pol. current 2.8 A fit M0: 2.709 ± 0.001 s
+Curie pol. current 2.8 A fit T2*: 0.461 ± 0.000 s
