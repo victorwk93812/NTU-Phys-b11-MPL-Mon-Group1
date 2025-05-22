@@ -1,0 +1,10 @@
+Polarization time: 1, Precession Frequency: 2261.25, FFT Magnitude: 0.09
+Polarization time: 2, Precession Frequency: 2261.87, FFT Magnitude: 0.20
+Polarization time: 3, Precession Frequency: 2261.87, FFT Magnitude: 0.33
+Polarization time: 4, Precession Frequency: 2261.87, FFT Magnitude: 0.28
+Polarization time: 5, Precession Frequency: 2261.87, FFT Magnitude: 0.36
+Polarization time: 13, Precession Frequency: 2261.87, FFT Magnitude: 0.47
+[0.47633725 3.57104033]
+[2.16459075 0.24669358]
+[2.50284995 0.24099908]
+[3.51782119 0.31120946]
