@@ -28,9 +28,11 @@ for fname in fnames:
 tind_l, tind_r = 200000, 800000
 NMR_time_sliced = [time[tind_l:tind_r] for time in NMR_time]
 NMR_amp_sliced = [amp[tind_l:tind_r] for amp in NMR_amp]
+
+# Debug NMR amplitude signal
 # plt.plot(NMR_time[0], NMR_amp[0])
-plt.plot(NMR_time_sliced[0], NMR_amp_sliced[0])
-plt.show()
+# plt.plot(NMR_time_sliced[0], NMR_amp_sliced[0])
+# plt.show()
 
 def magmom_T2star_eq(time, Mxy, T2star):
     return Mxy * np.exp(-time/T2star)
@@ -52,9 +54,10 @@ for i, axs in enumerate(axsT2star):
     axs.plot(T2star_time_span, T2star_fit_curve, color = "red", label = "Fit curve")
     axs.legend()
     axs.grid()
-    axs.set_title(f"Curie pol. current {pcur[i]} A M0, T2* Fit")
+    axs.set_title(f"Polarization Current {pcur[i]} A")
 figT2star.suptitle("Curie Law Exp. NMR Amplitude Signal T2star Decay Fit")
+plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, 
+                wspace=0.1, hspace=0.5)
 figT2star.savefig("../pics/Curie-T2star-Decay-Fit.png")
-
 plt.show()
 

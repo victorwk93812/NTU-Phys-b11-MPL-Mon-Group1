@@ -45,9 +45,11 @@ tind_l, tind_r = 130000, 450000
 NMR_time_sliced = [time[tind_l:tind_r] for time in NMR_time]
 NMR_sig_sliced = [sig[tind_l:tind_r] for sig in NMR_sig]
 NMR_amp_sliced = [amp[tind_l:tind_r] for amp in NMR_amp]
+
+# Debug NMR signal figure
 # plt.plot(NMR_time[0], NMR_amp[0])
-plt.plot(NMR_time_sliced[3], NMR_sig_sliced[3])
-plt.show()
+# plt.plot(NMR_time_sliced[3], NMR_sig_sliced[3])
+# plt.show()
 
 N = tind_r - tind_l # number of signal data points
 dt = NMR_time_sliced[0][1] - NMR_time_sliced[0][0] # FFT sampling rate
@@ -58,8 +60,9 @@ FFT_freq = [fftfreq(N, dt) for i in range(len(NMR_sig_sliced))]
 FFT_freq = [freq[:N//2] for freq in FFT_freq]
 FFT_sig = [np.abs(signal[:N//2]) for signal in FFT_sig]
 
-plt.plot(FFT_freq[3], FFT_sig[3])
-plt.show()
+# Debug FFT signal figure
+# plt.plot(FFT_freq[3], FFT_sig[3])
+# plt.show()
 
 # Mask with frequency region
 freq_l, freq_r = 2000, 2500
@@ -90,8 +93,12 @@ for ax in axsFFT:
     ax.annotate(f"{FFT_freq[i][FFT_peaks[i][idx]]:.2f} Hz", (FFT_freq[i][FFT_peaks[i][idx]], FFT_sig[i][FFT_peaks[i][idx]]), textcoords="offset points", xytext=(0,-10), ha='center', fontsize=8)
     ax.grid()
     ax.legend()
-    ax.set_title(f"Precession Signal Polarize {FFT_used_ptime[i - 1]} s NMR Amplitude Signal")
+    ax.set_title(f"Polarize {FFT_used_ptime[i - 1]} s")
     i = i + 1
+figFFT.suptitle("Precession Signal Detection in NMR Amplitude Signals")
+plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, 
+                wspace=0.1, hspace=0.5)
+figFFT.savefig("../pics/Peak-Detection.png")
 plt.show()
 
 T1_fit_time = ptime[1:]
@@ -117,6 +124,7 @@ axs_T1fit.plot(T1_time_span, T1_fit_curve, label = "Fit curve")
 axs_T1fit.scatter(T1_fit_time, T1_magmom, color = "red", label = "Amplitude of precession frequency")
 axs_T1fit.set_title("Amplitude of Precession Frequency to Polarization Time")
 axs_T1fit.legend()
+fig_T1fit.savefig("../pics/T1-fit.png")
 plt.show()
 
 ## Fit T2
@@ -126,8 +134,10 @@ tind_l, tind_r = 160000, 350000
 NMR_time_sliced = [time[tind_l:tind_r] for time in NMR_time]
 NMR_sig_sliced = [sig[tind_l:tind_r] for sig in NMR_sig]
 NMR_amp_sliced = [amp[tind_l:tind_r] for amp in NMR_amp]
-plt.plot(NMR_time_sliced[3], NMR_amp_sliced[3])
-plt.show()
+
+# Debug NMR amplitude signal
+# plt.plot(NMR_time_sliced[3], NMR_amp_sliced[3])
+# plt.show()
 
 def magmom_T2star_eq(time, Mxy, T2star):
     return Mxy * np.exp(-time/T2star)
@@ -146,9 +156,12 @@ for i, axs in enumerate(axsT2star):
 
     axs.plot(T2star_time_span, NMR_amp_sliced[i + 3], color = "blue", label = f"Polarize {T2star_used_ptime[i + 3]} s NMR amplitude data")
     axs.plot(T2star_time_span, T2star_fit_curve, color = "red", label = "Fit curve")
-    axs.set_title("NMR Amplitude Signal T2star Decay Fit")
+    axs.set_title(f"Polarize {T2star_used_ptime[i + 3]} s Fit")
     axs.legend()
     axs.grid()
-
+figT2star.suptitle("NMR Amplitude Signal T2star Decay Fit")
+plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, 
+                wspace=0.1, hspace=0.5)
+figT2star.savefig("../pics/T2star-fit.png")
 plt.show()
 

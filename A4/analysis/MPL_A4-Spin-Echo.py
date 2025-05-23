@@ -55,6 +55,7 @@ for i, axs in enumerate(axsSE):
     T2fit_time.append(NMR_time_sliced[i][NMR_sig_peaks[i][1]])
     T2fit_amp.append(NMR_amp_smth[i][NMR_sig_peaks[i][1]])
 figSE.suptitle("Spin-Echo Peaks in Smoothed NMR Amplitude Signal")
+figSE.savefig("../pics/Spin_Echo-Peak-Detection.png")
 plt.show()
 
 def magmom_T2_eq(time, Mz, T2):
@@ -71,6 +72,7 @@ axsSEfit.scatter(T2fit_time, T2fit_amp, color = "orange", label = "Spin-echo dat
 axsSEfit.set_title("Spin-Echo T2 Fit Graph")
 axsSEfit.grid()
 axsSEfit.legend()
+figSEfit.savefig("../pics/Spin_Echo-T2-fit.png")
 plt.show()
 
 
